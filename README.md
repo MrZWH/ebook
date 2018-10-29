@@ -36,6 +36,12 @@ html.style.fontSize = window.innerWidth/10 + 'px'
 ### epubjs 的核心工作原理解析
 ![](./images/epubjs.PNG)
 
+### transition 动画原理
+- 使用 v-show 动态显示或隐藏元素时，会触发过渡动画
+- transition 需要指定 name，并包裹一个包含 v-show 的 div
+- vue 会为 transition 包裹的 div 动态添加 class，共 6 种。
+![](./images/transition.PNG)
+
 ## Project setup
 ```
 npm install
