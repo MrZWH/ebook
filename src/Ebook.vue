@@ -81,10 +81,18 @@ export default {
           }
         }
       ],
-      defaultTheme: 0
+      defaultTheme: 0,
+      // 图书是否处于可用状态
+      bookAvailable: false
     };
   },
   methods: {
+    // progress 进度条的数值 （0 - 100）
+    onProgressChange(progress) {
+      const percentage = progress / 100
+      const location = percentage > 0 ? this.locations.cfiFromPercentage(percentage) : 0
+      this.rendition.display(location)
+    },
     setTheme(index) {
       this.themes.select(this.themeList[index].name)
       this.defaultTheme = index
@@ -137,6 +145,14 @@ export default {
       // this.themes.select(name)
       this.registerTheme()
       this.setTheme(this.defaultTheme)
+      // 获取 locations 对象
+      // 通过 epubjs 的钩子函数来实现
+      this.book.ready.then(() => {
+        return this.book.locations.generate()
+      }).then((result) => {
+        this.locations = this.book.locations
+        this.onProgressChange(100)
+      })
     }
   },
   mounted() {
