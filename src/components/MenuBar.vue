@@ -3,7 +3,8 @@
     <transition name="slide-up">
       <div class="menu-wrapper" :class="{'hide-box-shadow': ifSettingShow || !ifTitleAndMenuShow}" v-show="ifTitleAndMenuShow">
         <div class="icon-wrapper">
-          <span class="icon-menu icon"></span>
+          <span class="icon-menu icon"
+            @click="showSetting(3)"></span>
         </div>
         <div class="icon-wrapper">
           <span class="icon-progress icon"
@@ -74,11 +75,29 @@
         </div>
       </div>
     </transition>
+    <content-view
+      :ifShowContent="ifShowContent"
+      v-show="ifShowContent"
+      :navigation="navigation"
+      :bookAvailable="bookAvailable"
+      @jumpTo="jumpTo"
+    ></content-view>
+    <transition name="fade">
+      <div
+        class="content-mask"
+        v-show="ifShowContent"
+        @click="hideContent"
+      ></div>
+    </transition>
   </div>
 </template>
 
 <script>
+import ContentView from '@/components/Content';
 export default {
+  components: {
+    ContentView
+  },
   props: {
     ifTitleAndMenuShow: {
       type: Boolean,
@@ -87,15 +106,28 @@ export default {
     fontSizeList: Array,
     defaultFontSize: Number,
     themeList: Array,
-    defaultTheme: Number
+    defaultTheme: Number,
+    bookAvailable: {
+      type: Boolean,
+      default: false
+    },
+    navigation: Object
   },
   data() {
     return {
       ifSettingShow: false,
-      showTag: 0
+      showTag: 0,
+      progress: 0,
+      ifShowContent: false
     }
   },
   method: {
+    hideContent() {
+      this.ifShowContent = false
+    },
+    jumpTo(target) {
+      this.$emit('jumpTo', target)
+    },
     // 拖动进度条时触发事件
     onProgressInput(progress) {
       this.progress = progress
@@ -111,8 +143,13 @@ export default {
       this.$emit('setFontSize', fontSize)
     },
     showSetting(tag) {
-      this.ifSettingShow = true;
       this.showTag = tag
+      if (this.showTag === 3) {
+        this.ifSettingShow = false;
+        this.ifShowContent = true;
+      } else {
+        this.ifSettingShow = true
+      }
     },
     hideSetting() {
       this.ifSettingShow = false;
@@ -284,6 +321,16 @@ export default {
 
       }
     }
+  }
+  .content-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 101;
+    display: flex;
+    width: 100%;
+    height: 190%;
+    background: rgab(51, 51, 51, .8)
   }
 }
 </style>

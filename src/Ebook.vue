@@ -18,6 +18,8 @@
       :themeList="themeList"
       :defaultTheme="defaultTheme"
       @setTheme="setTheme"
+      @jumpTo="jumpTo"
+      :navigation="navigation"
     ></menu-bar>
 	</div>
 </template>
@@ -87,6 +89,16 @@ export default {
     };
   },
   methods: {
+    // 根据连接跳转到指定位置
+    jumpTo(href) {
+      this.rendition.display(href)
+      this.hideTitleAndMenu()
+    },
+    hideTitleAndMenu() {
+      this.ifTitleAndMenuShow = false
+      this.$refs.menuBar.hideSetting()
+      this.$refs.menuBar.hideContenr()
+    },
     // progress 进度条的数值 （0 - 100）
     onProgressChange(progress) {
       const percentage = progress / 100
@@ -148,6 +160,7 @@ export default {
       // 获取 locations 对象
       // 通过 epubjs 的钩子函数来实现
       this.book.ready.then(() => {
+        this.navigation = this.book.navigation
         return this.book.locations.generate()
       }).then((result) => {
         this.locations = this.book.locations
