@@ -9,16 +9,18 @@
           <span class="icon-progress icon"></span>
         </div>
         <div class="icon-wrapper">
-          <span class="icon-bright icon"></span>
+          <span class="icon-bright icon"
+            @click="showSetting(1)"></span>
         </div>
         <div class="icon-wrapper">
-          <span class="icon-a icon" @click="showSetting">A</span>
+          <span class="icon-a icon"
+            @click="showSetting(0)">A</span>
         </div>
       </div>
     </transition>
     <transition name="slide-up">
       <div class="setting-wrapper" v-show="ifSettingShow">
-        <div class="setting-font-size">
+        <div class="setting-font-size" v-if="showTag === 0">
           <div class="preview" :style="{fontSize: fontSizeList[0].fontSize + 'px'}">A</div>
           <div class="select">
             <div class="select-wrapper" @click="setFontSize(item.fontSize)" v-for="(item, index) in fontSizeList" :key="index">
@@ -33,6 +35,21 @@
           </div>
           <div class="preview" :style="{fontSize: fontSizeList[fontSizeList.length - 1].fontSize + 'px'}">A</div>
         </div>
+        <div class="setting-theme" v-else-if="showTag === 1">
+          <div class="setting-theme-item"
+            v-for="(item, index) in themeList"
+            :key="index"
+            @click="setTheme(index)"
+          >
+            <div class="preview"
+             :style="{background: item.style.body.background}"
+             :class="{'no-border': item.style.body.background !== '#fff'}"
+            ></div>
+            <div class="text"
+             :class="{'selected': index === defaultTheme}" 
+            >{{item.name}}</div>
+          </div>
+        </div>
       </div>
     </transition>
   </div>
@@ -46,19 +63,26 @@ export default {
       default: false
     },
     fontSizeList: Array,
-    defaultFontSize: Number
+    defaultFontSize: Number,
+    themeList: Array,
+    defaultTheme: Number
   },
   data() {
     return {
-      ifSettingShow: false
+      ifSettingShow: false,
+      showTag: 0
     }
   },
   method: {
+    setTheme(index) {
+      this.$emit('setTheme', index)
+    },
     setFontSize(fontSize) {
       this.$emit('setFontSize', fontSize)
     },
-    showSetting() {
+    showSetting(tag) {
       this.ifSettingShow = true;
+      this.showTag = tag
     },
     hideSetting() {
       this.ifSettingShow = false;
@@ -166,6 +190,35 @@ export default {
                 background: #000;
               }
             }
+          }
+        }
+      }
+    }
+    .setting-theme {
+      height: 100%;
+      display: flex;
+      .setting-theme-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: px2rem(5);
+        box-sizing: border-box;
+        .preview {
+          flex: 1;
+          border: px2rem(1) solid #ccc;
+          box-sizing: border-box;
+          &.no-border {
+            border: none;
+          }
+        }
+        .text {
+          flex: 0 0 px2rem(20);
+          font-size: px2rem(14);
+          color: #999;
+          @include center;
+
+          &.selected {
+            color: #333;
           }
         }
       }

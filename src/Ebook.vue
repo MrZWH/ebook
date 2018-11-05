@@ -9,7 +9,16 @@
 				<div class="right" @click="nextPage"></div>
 			</div>
 		</div>
-		<menu-bar @setFontSize="setFontSize" :defaultFontSize="defaultFontSize" :fontSizeList="fontSizeList" :ifTitleAndMenuShow="ifTitleAndMenuShow" ref="menuBar"></menu-bar>
+		<menu-bar
+      @setFontSize="setFontSize"
+      :defaultFontSize="defaultFontSize"
+      :fontSizeList="fontSizeList"
+      :ifTitleAndMenuShow="ifTitleAndMenuShow"
+      ref="menuBar"
+      :themeList="themeList"
+      :defaultTheme="defaultTheme"
+      @setTheme="setTheme"
+    ></menu-bar>
 	</div>
 </template>
 
@@ -38,9 +47,53 @@ export default {
         {fonstSize: 24},
       ],
       defaultFontSize: 16,
+      themeList: [
+        {
+          name: 'default',
+          style: {
+            body: {
+              'color': '#000', 'background': '#fff'
+            }
+          }
+        },
+        {
+          name: 'eye',
+          style: {
+            body: {
+              'color': '#000', 'background': '#ceeaba'
+            }
+          }
+        },
+        {
+          name: 'night',
+          style: {
+            body: {
+              'color': '#fff', 'background': '#000'
+            }
+          }
+        },
+        {
+          name: 'gold',
+          style: {
+            body: {
+              'color': '#000', 'background': 'rgb(241, 236, 226)'
+            }
+          }
+        }
+      ],
+      defaultTheme: 0
     };
   },
   methods: {
+    setTheme(index) {
+      this.themes.select(this.themeList[index].name)
+      this.defaultTheme = index
+    },
+    registerTheme() {
+      this.themeList.forEach(theme => {
+        this.themes.register(theme.name, theme.style)
+      });
+    },
     setFontSize(fontSize) {
       this.defaultFontSize = fontSize;
       if (this.themes) {
@@ -80,6 +133,10 @@ export default {
       this.themes = this.rendition.themes
       // 设置默认字体
       this.setFontSize(this.defaultFontSize)
+      // this;themes.register(name, styles)
+      // this.themes.select(name)
+      this.registerTheme()
+      this.setTheme(this.defaultTheme)
     }
   },
   mounted() {
